@@ -30,7 +30,7 @@ import pystache
 from markdown import markdown
 from unidecode import unidecode
 
-sys.path.append("/Users/aditya/Devs/speechhub")
+sys.path.append("/Users/aditya/Dev/Github/speechhub/speechhub")
 
 from statics import path
 from exc import DuplicatedPostNameError, NotASpeechhubProjectFolderErro, PostNotFoundError
@@ -471,6 +471,6 @@ def slugify(text, delim=u'-'):
     """
     result = []
     for word in _punct_re.split(text.lower()):
-        result.extend(unidecode(word.split()))
+        result.extend(unidecode(word).split())
     return unicode(delim.join(result))
 
