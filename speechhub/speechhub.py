@@ -21,7 +21,7 @@ import os
 import sys
 import argparse
 
-from functions import create_blog, new_post, manage, admin, rebuild_blog
+from functions import create_blog, new_post, new_link, manage, admin, rebuild_blog
 
 USAGE = """Usage:
 speechhub <command> [arg,[...]]
@@ -30,6 +30,7 @@ commands:
 \tadmin
 \tmanage
 \tnew-post
+\tnew-link
 \trebuild
         """
 
@@ -104,6 +105,22 @@ def create_new_post(args):
                                        help='The title of your post.',)
     parsed_args = parser.parse_args(args)
     new_post(vars(parsed_args))
+
+
+def create_new_link_post(args):
+    parser = argparse.ArgumentParser(description='Speechhub is a simple command line static blog engine.')
+    parser.add_argument('--title', metavar='title',
+                                       type=str,
+                                       required=True, 
+                                       nargs=1,
+                                       help='The title of your post.',)
+    parser.add_argument('--link', metavar='link',
+                                       type=str,
+                                       required=True, 
+                                       nargs=1,
+                                       help='The link of your post.',)
+    parsed_args = parser.parse_args(args)
+    new_link(vars(parsed_args))
     
 
 def manage_blog(args):
@@ -140,6 +157,8 @@ def main():
         admin_blog(args)
     elif command == 'new-post':
         create_new_post(args)
+    elif command == 'new-link':
+        create_new_link_post(args)
     elif command == 'manage':
         manage_blog(args)
     elif command == 'rebuild':

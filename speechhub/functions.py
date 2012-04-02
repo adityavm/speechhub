@@ -30,6 +30,8 @@ import pystache
 from markdown import markdown
 from unidecode import unidecode
 
+sys.path.append("/Users/aditya/Devs/speechhub")
+
 from statics import path
 from exc import DuplicatedPostNameError, NotASpeechhubProjectFolderErro, PostNotFoundError
 
@@ -111,12 +113,49 @@ def new_post(args):
         meta = {"date":time.asctime(),
                 "post_title":post_title,
                 "post_file_name":post_file_name + '.md',
+				"post_link":null,
                 "post_author":author,
                 "published":False,
+				"post_type":"text",
                 }
         json.dump(meta,post_meta)
 
     print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
+
+
+def new_link(args):
+	post_title = args['title'][0].decode('utf-8')
+	post_link = args['link'][0].decode('utf-8')
+
+	LOCAL_PATH = os.getcwd()
+
+	try:
+		config_file = open(os.path.join(LOCAL_PATH,'config/config.json'))
+	except IOError:
+		sys.stderr.write('You are not inside a SpeechHub project directory.\n')
+		return
+
+	post_file_name = slugify(post_title) + time.strftime("%Y-%b-%d")
+	author = json.load(config_file)['username']
+
+	if os.path.exists(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name))):
+		raise DuplicatedPostNameError()
+
+	with open(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_file:
+		post_file.write("Fill it!")
+
+	with open(os.path.join(LOCAL_PATH,'posts%s%s.meta.json' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_meta:
+		meta = {"date":time.asctime(),
+				"post_title":post_title,
+				"post_file_name":post_file_name + '.md',
+				"post_link":post_link,
+				"post_author":author,
+				"published":False,
+				"post_type":"link",
+				}
+		json.dump(meta,post_meta)
+
+	print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
 
 
 def parse_post(config,post_file_name):
@@ -133,13 +172,26 @@ def parse_post(config,post_file_name):
     else:
         url = config['url']
 
-    return {'date':time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y")),
-            'post':parsed_post,
-            'author':meta_content['post_author'],
-            'title':meta_content['post_title'],
-            'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
-            'url':url,
-            }
+	if meta_content['post_type'] == 'link':
+		return {'date':time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y")),
+				'post':parsed_post,
+				'author':meta_content['post_author'],
+				'title':meta_content['post_title'],
+				'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
+				'url':url,
+				'post_link':meta_content['post_link'],
+				'type':meta_content['post_type'],
+				}
+	else:
+		return {'date':time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y")),
+				'post':parsed_post,
+				'author':meta_content['post_author'],
+				'title':meta_content['post_title'],
+				'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
+				'url':url,
+				'post_link':None,
+				'type':meta_content['post_type'],
+				}
 
 
 def get_posts_for_page(published_posts,page=1,posts_per_page=5):
@@ -149,34 +201,45 @@ def get_posts_for_page(published_posts,page=1,posts_per_page=5):
 
 def create_index(config):
 
-    posts_folder = os.path.join(config['path'],'posts')
-    posts_at_index = get_posts_for_page(config['published_posts'],posts_per_page=config['posts_per_page'])
+	posts_folder = os.path.join(config['path'],'posts')
+	posts_at_index = get_posts_for_page(config['published_posts'],posts_per_page=config['posts_per_page'])
     
-    posts = [parse_post(config,os.path.join(posts_folder,post_file_name)) for post_file_name in posts_at_index]
+	i_posts = [parse_post(config,os.path.join(posts_folder,post_file_name)) for post_file_name in posts_at_index]
 
-    if config['debug']:
-        url = config['path']
-    else:
-        url = config['url']
+	posts = [];
+	for p in i_posts:
+		if p['type'] == "link":
+			template = open(path.LINK_POST_TEMPLATE).read()
+			link = pystache.render(template,p)
+			posts.append({"post":link})
+		elif p['type'] == "text":
+			template = open(path.NORMAL_POST_TEMPLATE).read()
+			text = pystache.render(template,p)
+			posts.append({"post":text})
+			
+	if config['debug']:
+		url = config['path']
+	else:
+		url = config['url']
 
-    paginator = create_paginator(0,len(config['published_posts']),config['posts_per_page'],url=url)
+	paginator = create_paginator(0,len(config['published_posts']),config['posts_per_page'],url=url)
 
-    page_content = {'posts':posts,
-                    'blog_name':config['blog_name'],
-                    'blog_description':config['blog_description'], #TODO!
-                    'paginator':paginator,
-                    'url':url,
-                    'about_author':config['about_author'],
-                    'contacts':config['contacts'],
-                    'links':config['links'],
-                    'css_file':config['css_file'],
-                    'old_posts':get_permalinks_list(config),
-                    }
+	page_content = {'posts':posts,
+		'blog_name':config['blog_name'],
+		'blog_description':config['blog_description'], #TODO!
+		'paginator':paginator,
+		'url':url,
+		'about_author':config['about_author'],
+		'contacts':config['contacts'],
+		'links':config['links'],
+		'css_file':config['css_file'],
+		'old_posts':get_permalinks_list(config),
+	}
 
-    index_template = open(path.INDEX_TEMPLATE).read()
-    with codecs.open(os.path.join(config['path'],'index.html'),'w',encoding='utf-8') as index_file:
-        index_content = pystache.render(index_template,page_content)
-        index_file.write(unicode(index_content))
+	index_template = open(path.INDEX_TEMPLATE).read()
+	with codecs.open(os.path.join(config['path'],'index.html'),'w',encoding='utf-8') as index_file:
+		index_content = pystache.render(index_template,page_content)
+		index_file.write(unicode(index_content))
 
 
 def create_paginator(page,number_of_posts,posts_per_page,url=''):
@@ -408,6 +471,6 @@ def slugify(text, delim=u'-'):
     """
     result = []
     for word in _punct_re.split(text.lower()):
-        result.extend(unidecode(word).split())
+        result.extend(unidecode(word.split()))
     return unicode(delim.join(result))
 
