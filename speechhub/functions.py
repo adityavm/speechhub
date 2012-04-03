@@ -113,7 +113,7 @@ def new_post(args):
 		meta = {"date":time.asctime(),
 				"post_title":post_title,
 				"post_file_name":post_file_name + '.md',
-				"post_link":null,
+				"post_link":None,
 				"post_author":author,
 				"published":False,
 				"post_type":"text",
@@ -165,15 +165,18 @@ def parse_post(config,post_file_name):
 	post = codecs.open(post_file_name,'r',encoding='utf-8')
 	meta_content = json.load(open(meta_file_name))
 	post_content = unicode(post.read())
-	parsed_post = markdown(post_content)
+	parsed_post = markdown(post_content, ['footnotes'])
 
 	if config['debug']:
 		url = config['path']
 	else:
 		url = config['url']
 
+	post_date = time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y"))
+	post_date = post_date.lstrip('0')
+
 	if meta_content['post_type'] == 'link':
-		return {'date':time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y")),
+		return {'date': post_date,
 				'post':parsed_post,
 				'author':meta_content['post_author'],
 				'title':meta_content['post_title'],
@@ -183,7 +186,7 @@ def parse_post(config,post_file_name):
 				'type':meta_content['post_type'],
 				}
 	else:
-		return {'date':time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y")),
+		return {'date': post_date,
 				'post':parsed_post,
 				'author':meta_content['post_author'],
 				'title':meta_content['post_title'],
