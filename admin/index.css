@@ -1,0 +1,47 @@
+body {
+	font-family: "Calibri";
+	width: 800px;
+	margin: 0 auto;
+}
+
+.panel {
+	width: 350px;
+	padding: 0 25px;
+	float: left;
+}
+
+.panel h4 {
+	text-transform: uppercase;
+}
+
+.panel input.newpost {
+	border: 0;
+	border-left: 2px solid #888;
+	font: 16px "Calibri", sans-serif;
+	padding-left: 5px; margin-left: -5px; margin-bottom: 10px;
+}
+
+.panel input.newpost:focus {
+	outline: 0;
+}
+
+.panel a.post {
+	display: block;
+	color: #666;
+	font-size: 20px;
+	font-weight: bold;
+	text-decoration: none;
+	margin: 3px 0;
+}
+
+.panel a.post:hover {
+	text-decoration: underline;
+}
+
+.panel.published h4 {
+	color: #aaa;
+}
+
+.panel.published a.post {
+	color: #888;
+}

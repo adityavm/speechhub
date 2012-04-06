@@ -1,0 +1,113 @@
+a:hover {
+	cursor: pointer;
+}
+
+.post {
+	position: relative;
+	left: 50px;
+	width: 850px;
+	margin: 30px auto 0;
+}
+
+.post h1 {
+	font: bold 30px "Calibri", sans-serif;
+}
+
+.post a.return {
+	color: #ccc;
+	text-decoration: none;
+	float: left;
+	margin-left: -40px;
+	font-size: 30px;
+	font-family: "Calibri";
+}
+
+.post a.return:hover {
+	color: #888;
+}
+
+.post textarea {
+	width: 800px;
+	height: 80%;
+	font: 16px "Calibri", sans-serif;
+	border: 0;
+	padding-right: 50px; margin-bottom: 20px;
+}
+
+a.button {
+	display: inline-block;
+	font: 16px "Calibri", sans-serif;
+	padding: 5px 10px;
+	background-color: #eee;	
+	border: 1px solid #eaeaea;
+
+	-webkit-border-radius: 5px;
+}
+
+.bounding {
+	display: inline-block;
+	padding: 2px;
+	border: 2px solid orange;
+	-webkit-border-radius: 5px;
+}
+
+a.button.on {
+	background-color: orange;
+	color: #fff;
+}
+
+a.button.on span:before {
+	font-size: 13px;
+	display: inline-block;
+	padding-right: 3px;
+	content: "\2714";
+}
+
+a.button:hover {
+	background-color: darkorange;
+	color: #fff;
+	cursor: pointer;
+}
+
+a.button.on:hover {
+	background-color: orange;
+	cursor: default;
+}
+
+.modal {
+	position: fixed; top: 0; left: 0;
+	width: 100%; height: 100%;
+	background-color: rgba(255,255,255,0.9);
+	display: none;
+}
+
+.modal .box {
+	position: fixed; top: 50%; left: 50%;
+	overflow: auto;
+	width: 560px;
+	margin: -150px 0 0 -280px;
+	background-color: #fff;
+
+	border: 1px solid #eee;
+	-webkit-border-radius: 4px;
+	-webkit-box-shadow: rgba(0,0,0,0.1) 0 0 5px;
+}
+
+.modal .box p {
+	font: 14px "Calibri", sans-serif;
+	margin: 0 0 10px;
+	padding: 10px;
+	background-color: #eee;
+}
+
+.modal .box input[type='text']{
+	width: 540px;
+	font: 16px "Calibri", sans-serif;
+	border: 0;
+
+	margin: 0 10px 10px;
+}
+
+.modal .box input[type='text']:focus {
+	outline: none;
+}

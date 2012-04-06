@@ -287,7 +287,7 @@ def create_page(config,page_number):
 	posts_folder = os.path.join(config['path'],'posts')
 	posts_at_page = get_posts_for_page(config['published_posts'],posts_per_page=config['posts_per_page'],page=page_number)
 	
-	i_posts = [parse_post(config,os.path.join(posts_folder,post_file_name)) for post_file_name in posts_at_index]
+	i_posts = [parse_post(config,os.path.join(posts_folder,post_file_name)) for post_file_name in posts_at_page]
 	
 	posts = [];
 	for p in i_posts:
