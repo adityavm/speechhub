@@ -45,10 +45,7 @@
 		}
 
 		if($_GET['save'] == 1){//save this post
-			$post = $_COOKIE['speechhub_post_body'];
 			$meta = unserialize(base64_decode($_COOKIE['speechhub_post_meta']));
-
-			file_put_contents($meta['filepath'], $post);
 
 			if($meta['obj']['published'] == false)://update date in meta if post not published yet
 				$meta['obj']['date'] = strftime("%a %b %d %H:%M:%S %Y");
@@ -57,10 +54,7 @@
 		}
 
 		if($_GET['publish'] == 1){//publish this post
-			$post = $_COOKIE['speechhub_post_body'];
 			$meta = unserialize(base64_decode($_COOKIE['speechhub_post_meta']));
-
-			file_put_contents($meta['filepath'], $post);
 
 			if($meta['obj']['published'] == false)://update date in meta if post not published yet
 				$meta['obj']['date'] = strftime("%a %b %d %H:%M:%S %Y");
@@ -76,7 +70,7 @@
 			exec("/usr/local/git/bin/git push origin master", $out);
 			print_r($out);
 			echo "-->";
-			//header("Location: index.php");
+			header("Location: index.php");
 		}
 	}
 ?>

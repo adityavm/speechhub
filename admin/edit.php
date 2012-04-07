@@ -23,13 +23,19 @@
 
 		function save(){
 			post = $("textarea").val();
-			$.cookie("speechhub_post_body", post);
+			$.post("modifyPost.php", {"text": post}, function(ret){
+				console.log("DEBUG: Done!");
+				console.log("DEBUG: ", ret);
+			}, 'json');
 			window.location = "index.php?save=1";
 		}
 
 		function publish(){
 			post = $("textarea").val();
-			$.cookie("speechhub_post_body", post);
+			$.post("modifyPost.php", {"text": post}, function(ret){
+				console.log("DEBUG: Done!");
+				console.log("DEBUG: ", ret);
+			}, 'json');
 			window.location = "index.php?publish=1";
 		}
 	</script>
@@ -58,7 +64,7 @@
 		var $this = $(this);
 
 		if(e.keyCode == 13){
-			$.getJSON("modifyPostType.php", {"link": $this.val()}, function(ret){
+			$.getJSON("modifyPost.php", {"link": $this.val()}, function(ret){
 				console.log("DEBUG: Done!");
 				console.log("DEBUG: ", ret);
 

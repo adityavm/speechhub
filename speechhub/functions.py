@@ -100,8 +100,12 @@ def new_post(args):
 		sys.stderr.write('You are not inside a SpeechHub project directory.\n')
 		return
 
-	post_file_name = slugify(post_title) + time.strftime("%Y-%b-%d")
-	author = json.load(config_file)['username']
+	config = json.load(config_file)
+
+	post_id = config['post_count']+1
+	#post_file_name = slugify(post_title) + time.strftime("%Y-%b-%d")
+	post_file_name = str(post_id)
+	author = config['username']
 
 	if os.path.exists(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name))):
 		raise DuplicatedPostNameError()
@@ -110,7 +114,8 @@ def new_post(args):
 		post_file.write("Fill it!")
 
 	with open(os.path.join(LOCAL_PATH,'posts%s%s.meta.json' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_meta:
-		meta = {"date":time.asctime(),
+		meta = {"id":post_id,
+				"date":time.asctime(),
 				"post_title":post_title,
 				"post_file_name":post_file_name + '.md',
 				"post_link":None,
@@ -119,6 +124,8 @@ def new_post(args):
 				"post_type":"text",
 				}
 		json.dump(meta,post_meta)
+
+	increment_post_count()
 
 	print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
 
@@ -135,8 +142,12 @@ def new_link(args):
 		sys.stderr.write('You are not inside a SpeechHub project directory.\n')
 		return
 
-	post_file_name = slugify(post_title) + time.strftime("%Y-%b-%d")
-	author = json.load(config_file)['username']
+	config = json.load(config_file)
+
+	post_id = config['post_count']+1
+	#post_file_name = slugify(post_title) + time.strftime("%Y-%b-%d")
+	post_file_name = str(post_id)
+	author = config['username']
 
 	if os.path.exists(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name))):
 		raise DuplicatedPostNameError()
@@ -145,7 +156,8 @@ def new_link(args):
 		post_file.write("Fill it!")
 
 	with open(os.path.join(LOCAL_PATH,'posts%s%s.meta.json' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_meta:
-		meta = {"date":time.asctime(),
+		meta = {"id":post_id,
+				"date":time.asctime(),
 				"post_title":post_title,
 				"post_file_name":post_file_name + '.md',
 				"post_link":post_link,
@@ -154,6 +166,8 @@ def new_link(args):
 				"post_type":"link",
 				}
 		json.dump(meta,post_meta)
+
+	increment_post_count()
 
 	print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
 
@@ -176,7 +190,8 @@ def parse_post(config,post_file_name):
 	post_date = post_date.lstrip('0')
 
 	if meta_content['post_type'] == 'link':
-		return {'date': post_date,
+		return {'id': meta_content['post_id'],
+				'date': post_date,
 				'post':parsed_post,
 				'author':meta_content['post_author'],
 				'title':meta_content['post_title'],
@@ -186,7 +201,8 @@ def parse_post(config,post_file_name):
 				'type':meta_content['post_type'],
 				}
 	else:
-		return {'date': post_date,
+		return {'id': meta_content['post_id'],
+				'date': post_date,
 				'post':parsed_post,
 				'author':meta_content['post_author'],
 				'title':meta_content['post_title'],
@@ -249,7 +265,7 @@ def create_paginator(page,number_of_posts,posts_per_page,url=''):
 	last_page = int(math.ceil(float(number_of_posts) / posts_per_page))
 	
 	numbers = filter(lambda n : n >= 1, range(page-5,page+6))
-	content = {'pages':[{'number':n,'link':'%s/pages/page%s.html' % (url,n)} for n in numbers if n > 1 and n <= last_page]}
+	content = {'pages':[{'number':n,'link':'%s/pages/%s.html' % (url,n)} for n in numbers if n > 1 and n <= last_page]}
 
 	if 1 in numbers:
 		content['pages'].insert(0,{'number':1,'link':'%s/index.html' % url})
@@ -320,7 +336,7 @@ def create_page(config,page_number):
 
 	template = open(path.INDEX_TEMPLATE).read()
 	
-	with codecs.open(os.path.join(config['path'],'pages%spage%s.html' % (FOLDER_SEPARATOR,page_number)),'w',encoding='utf-8') as page:
+	with codecs.open(os.path.join(config['path'],'pages%s%s.html' % (FOLDER_SEPARATOR,page_number)),'w',encoding='utf-8') as page:
 		content = pystache.render(template,page_content)
 		page.write(unicode(content))
 
@@ -431,7 +447,6 @@ def publish_post(path):
 
 	rebuild_blog()
 
-
 def get_config():
 	LOCAL_PATH = os.getcwd()
 	config_file_path = os.path.join(LOCAL_PATH,'config%sconfig.json' % FOLDER_SEPARATOR)
@@ -483,6 +498,10 @@ def set_debug(_debug):
 	config['debug'] = _debug
 	update_config(config)
 
+def increment_post_count():
+	config = get_config()
+	config['post_count'] = config['post_count']+1
+	update_config(config)
 
 def slugify(text, delim=u'-'):
 	"""Generates an slightly worse ASCII-only slug.
