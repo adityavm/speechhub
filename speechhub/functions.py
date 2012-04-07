@@ -367,7 +367,7 @@ def create_rss(config):
 			p['rss_link'] = p['post_link']
 		else:
 			p['rss_link'] = p['url'] + "/" + p['relative_permalink']
-
+	
 	if config['debug']:
 		url = config['path']
 	else:
