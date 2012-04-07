@@ -23,6 +23,7 @@ STATIC_PATH = os.path.dirname(os.path.abspath( __file__ ))
 
 EMPTY_INDEX_TEMPLATE = os.path.join(STATIC_PATH,'empty-index.mustache')
 INDEX_TEMPLATE = os.path.join(STATIC_PATH,'index.mustache')
+RSS_TEMPLATE = os.path.join(STATIC_PATH,'rss.mustache')
 NORMAL_POST_TEMPLATE = os.path.join(STATIC_PATH, 'normal_post.mustache')
 LINK_POST_TEMPLATE = os.path.join(STATIC_PATH, 'link_post.mustache')
 INITIAL_CONFIG_FILE = os.path.join(STATIC_PATH,'initial_config_file.json')

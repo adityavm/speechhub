@@ -63,7 +63,7 @@ def create_blog_structure(blog_path,config_struct):
     os.makedirs(os.path.join(blog_path,'pages'))
     os.makedirs(os.path.join(blog_path,os.path.join('pages','permalinks')))
     os.makedirs(os.path.join(blog_path,'config'))
-    copy_static_files(blog_path)
+    #copy_static_files(blog_path)
     create_empty_index(blog_path,config_struct)
 
     with open(os.path.join(os.path.join(blog_path,'config'),'config.json'),'w') as config_file:
@@ -92,6 +92,7 @@ def get_initial_config_file(args):
 	config_struct['blog_name'] = args['blog_name'][0] if args['blog_name'] else None
 	config_struct['username'] = args['username'][0] if args['username'] else None
 	config_struct['email'] = args['email'][0] if args['email'] else None
+	config_struct['twitter'] = args['twitter'][0] if args['twitter'] else None
 	return config_struct
 
 
@@ -254,8 +255,10 @@ def create_index(config):
 		'paginator':paginator,
 		'url':url,
 		'about_author':config['about_author'],
+		'email':config['email'],
 		'contacts':config['contacts'],
 		'links':config['links'],
+		'twitter':config['twitter'],
 		'css_file':config['css_file'],
 		'old_posts':get_permalinks_list(config),
 	}
@@ -334,8 +337,10 @@ def create_page(config,page_number):
 					'paginator':paginator,
 					'url':url,
 					'about_author':config['about_author'],
+					'email':config['email'],
 					'contacts':config['contacts'],
 					'links':config['links'],
+					'twitter':config['twitter'],
 					'css_file':config['css_file'],
 					'old_posts':get_permalinks_list(config),
 					}
@@ -345,6 +350,42 @@ def create_page(config,page_number):
 	with codecs.open(os.path.join(config['path'],'pages%s%s.html' % (FOLDER_SEPARATOR,page_number)),'w',encoding='utf-8') as page:
 		content = pystache.render(template,page_content)
 		page.write(unicode(content))
+
+
+def create_rss(config):
+
+	posts_folder = os.path.join(config['path'],'posts')
+	posts_at_index = get_posts_for_page(config['published_posts'],posts_per_page=config['posts_per_page'])
+	
+	posts = [parse_post(config,os.path.join(posts_folder,post_file_name)) for post_file_name in posts_at_index]
+
+	for p in posts:
+		post_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.strptime(p['date'], "%d %B, %Y"))
+		p['date'] = post_time
+
+		if p['type'] == "link":
+			p['rss_link'] = p['post_link']
+		else:
+			p['rss_link'] = p['url'] + "/" + p['relative_permalink']
+
+	if config['debug']:
+		url = config['path']
+	else:
+		url = config['url']
+
+	paginator = create_paginator(0,len(config['published_posts']),config['posts_per_page'],url=url)
+
+	page_content = {'items':posts,
+		'blog_name':config['blog_name'],
+		'blog_description':config['blog_description'], #TODO!
+		'url':url,
+		'last_build': time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()), 
+	}
+
+	rss_template = open(path.RSS_TEMPLATE).read()
+	with codecs.open(os.path.join(config['path'],'feed.rss'),'w',encoding='utf-8') as rss_file:
+		rss_content = pystache.render(rss_template,page_content)
+		rss_file.write(unicode(rss_content))
 
 
 def rebuild_blog(args={}):
@@ -357,7 +398,7 @@ def rebuild_blog(args={}):
 		set_debug(False)
 
 	config = get_config()
-	copy_static_files(config['path'])
+	#copy_static_files(config['path'])
 	posts_path = os.path.join(config['path'],'posts')
 	published_posts = get_published_posts(posts_path)
 	config['published_posts'] = published_posts
@@ -365,6 +406,7 @@ def rebuild_blog(args={}):
 	create_permalinks(config)
 	create_index(config)
 	create_pages(config)
+	create_rss(config)
 
 
 def create_permalinks(config):

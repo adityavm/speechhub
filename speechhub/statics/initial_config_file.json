@@ -16,5 +16,6 @@
     "disqus":{"enabled":false,
               "shortname":""
              },
+	"twitter":"",
     "footage_content":""
 }
