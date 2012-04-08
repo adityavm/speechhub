@@ -247,7 +247,7 @@ def create_index(config):
 	else:
 		url = config['url']
 
-	paginator = create_paginator(0,len(config['published_posts']),config['posts_per_page'],url=url)
+	paginator = create_next_page_link(0,len(config['published_posts']),config['posts_per_page'],url=url)
 
 	page_content = {'posts':posts,
 		'blog_name':config['blog_name'],
@@ -268,7 +268,7 @@ def create_index(config):
 		index_content = pystache.render(index_template,page_content)
 		index_file.write(unicode(index_content))
 
-
+"""
 def create_paginator(page,number_of_posts,posts_per_page,url=''):
 
 	last_page = int(math.ceil(float(number_of_posts) / posts_per_page))
@@ -279,6 +279,25 @@ def create_paginator(page,number_of_posts,posts_per_page,url=''):
 	if 1 in numbers:
 		content['pages'].insert(0,{'number':1,'link':'%s/index.html' % url})
 		
+	paginator_template = open(path.PAGINATOR_TEMPLATE).read()
+	paginator = pystache.render(paginator_template,content)
+
+	return paginator
+"""
+
+def create_next_page_link(page,number_of_posts,posts_per_page,url=''):
+
+	last_page = int(math.ceil(float(number_of_posts) / posts_per_page))
+	content = {}
+
+	if(page < last_page):
+		if(page == 0):
+			content = {'link': '%s/pages/%s.html' % (url,2) }
+		else:
+			content = {'link': '%s/pages/%s.html' % (url,page+1) }
+	else:
+		return False
+
 	paginator_template = open(path.PAGINATOR_TEMPLATE).read()
 	paginator = pystache.render(paginator_template,content)
 
@@ -329,7 +348,7 @@ def create_page(config,page_number):
 	else:
 		url = config['url']
 
-	paginator = create_paginator(page_number,len(config['published_posts']),config['posts_per_page'],url=url)
+	paginator = create_next_page_link(page_number,len(config['published_posts']),config['posts_per_page'],url=url)
 
 	page_content = {'posts':posts,
 					'blog_name':config['blog_name'],
@@ -373,7 +392,7 @@ def create_rss(config):
 	else:
 		url = config['url']
 
-	paginator = create_paginator(0,len(config['published_posts']),config['posts_per_page'],url=url)
+	paginator = create_next_page_link(0,len(config['published_posts']),config['posts_per_page'],url=url)
 
 	page_content = {'items':posts,
 		'blog_name':config['blog_name'],

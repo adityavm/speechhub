@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 			<title>{{blog_name}}</title>
 			<description>{{blog_description}}</description>
 			<link>{{url}}</link>
 			<lastBuildDate>{{last_build}}</lastBuildDate>
 			<pubDate>{{last_build}}</pubDate>
+			<atom:link href="{{url}}/feed.rss" rel="self" type="application/rss+xml" />
 	
 			{{#items}}
 			<item>
 					<title>{{title}}</title>
-					<description><![CDATA[
-						{{{post}}}
-					]]></description>
+					<description><![CDATA[{{{post}}}]]></description>
 					<link>{{rss_link}}</link>
+					<guid>{{url}}/{{relative_permalink}}</guid>
 					<pubDate>{{date}}</pubDate>
 			</item>
 			{{/items}}
