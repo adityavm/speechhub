@@ -292,11 +292,14 @@ def create_next_page_link(page,number_of_posts,posts_per_page,url=''):
 
 	if(page < last_page):
 		if(page == 0):
-			content = {'link': '%s/pages/%s.html' % (url,2) }
+			content = {'prev_link': False, 'next_link': '%s/pages/%s.html' % (url,2)}
 		else:
-			content = {'link': '%s/pages/%s.html' % (url,page+1) }
+			content = {'prev_link': '%s/pages/%s.html' % (url,page-1), 'next_link': '%s/pages/%s.html' % (url,page+1)}
 	else:
-		return False
+		if (page-1)==1:
+			content = {'prev_link': '%s/index.html' % url, 'next_link': False}
+		else:
+			content = {'prev_link': '%s/pages/%s.html' % (url,page-1), 'next_link': False}
 
 	paginator_template = open(path.PAGINATOR_TEMPLATE).read()
 	paginator = pystache.render(paginator_template,content)
@@ -482,8 +485,10 @@ def create_post_page(config,post_file_name):
 					'blog_description':config['blog_description'],
 					'url':url,
 					'about_author':config['about_author'],
+					'email': config['email'],
 					'contacts':config['contacts'],
 					'links':config['links'],
+					'twitter': config['twitter'],
 					'css_file':config['css_file'],
 					'old_posts':get_permalinks_list(config),
 					'disqus':disqus,

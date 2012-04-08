@@ -1,5 +1,10 @@
 <div id="paginator">
     <span>
-      <a href="{{link}}">Next &rarr;</a>
+	  {{#prev_link}}
+		<a href="{{prev_link}}">&larr; Previous</a>
+	  {{/prev_link}}
+	  {{#next_link}}
+		<a href="{{next_link}}">Next &rarr;</a>
+	  {{/next_link}}
     </span>
 </div>
