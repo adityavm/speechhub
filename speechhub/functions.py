@@ -163,7 +163,7 @@ def new_link(args):
 		post_file.write("Fill it!")
 
 	with open(os.path.join(LOCAL_PATH,'posts%s%s.meta.json' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_meta:
-		meta = {"id":post_id,
+		meta = {"post_id":post_id,
 				"date":time.asctime(),
 				"post_title":post_title,
 				"post_file_name":post_file_name + '.md',
