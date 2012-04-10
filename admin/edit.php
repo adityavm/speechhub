@@ -26,8 +26,8 @@
 			$.post("modifyPost.php", {"text": post}, function(ret){
 				console.log("DEBUG: Done!");
 				console.log("DEBUG: ", ret);
+				window.location = "index.php?save=1";
 			}, 'json');
-			window.location = "index.php?save=1";
 		}
 
 		function publish(){
@@ -35,8 +35,8 @@
 			$.post("modifyPost.php", {"text": post}, function(ret){
 				console.log("DEBUG: Done!");
 				console.log("DEBUG: ", ret);
+				window.location = "index.php?publish=1";
 			}, 'json');
-			window.location = "index.php?publish=1";
 		}
 	</script>
 </head>

@@ -121,14 +121,15 @@ def new_post(args):
 		post_file.write("Fill it!")
 
 	with open(os.path.join(LOCAL_PATH,'posts%s%s.meta.json' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_meta:
-		meta = {"id":post_id,
-				"date":time.asctime(),
-				"post_title":post_title,
+		meta = {"id":			post_id,
+				"date":			time.asctime(),
+				"post_title":	post_title,
 				"post_file_name":post_file_name + '.md',
-				"post_link":None,
-				"post_author":author,
-				"published":False,
-				"post_type":"text",
+				"post_slug": 	slugify(post_title),
+				"post_link":	None,
+				"post_author":	author,
+				"published":	False,
+				"post_type":	"text",
 				}
 		json.dump(meta,post_meta)
 
@@ -195,6 +196,7 @@ def parse_post(config,post_file_name):
 
 	post_date = time.strftime(config['datetime-format'], time.strptime(meta_content['date'], "%a %b %d %H:%M:%S %Y"))
 	post_date = post_date.lstrip('0')
+	post_slug = slugify(meta_content['post_title'])
 
 	if meta_content['post_type'] == 'link':
 		return {'id': meta_content['post_id'],
@@ -202,7 +204,8 @@ def parse_post(config,post_file_name):
 				'post':parsed_post,
 				'author':meta_content['post_author'],
 				'title':meta_content['post_title'],
-				'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
+				#'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
+				'relative_permalink':'post/'+post_slug+"/",
 				'url':url,
 				'post_link':meta_content['post_link'],
 				'type':meta_content['post_type'],
@@ -213,7 +216,8 @@ def parse_post(config,post_file_name):
 				'post':parsed_post,
 				'author':meta_content['post_author'],
 				'title':meta_content['post_title'],
-				'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
+				#'relative_permalink':'pages/permalinks/'+meta_content['post_file_name'][:-3]+'.html',
+				'relative_permalink':'post/'+post_slug+"/",
 				'url':url,
 				'post_link':None,
 				'type':meta_content['post_type'],
@@ -292,14 +296,14 @@ def create_next_page_link(page,number_of_posts,posts_per_page,url=''):
 
 	if(page < last_page):
 		if(page == 0):
-			content = {'prev_link': False, 'next_link': '%s/pages/%s.html' % (url,2)}
+			content = {'prev_link': False, 'next_link': '%s/page/%s/' % (url,2)}
 		else:
-			content = {'prev_link': '%s/pages/%s.html' % (url,page-1), 'next_link': '%s/pages/%s.html' % (url,page+1)}
+			content = {'prev_link': '%s/page/%s/' % (url,page-1), 'next_link': '%s/page/%s/' % (url,page+1)}
 	else:
 		if (page-1)==1:
-			content = {'prev_link': '%s/index.html' % url, 'next_link': False}
+			content = {'prev_link': '%s/' % url, 'next_link': False}
 		else:
-			content = {'prev_link': '%s/pages/%s.html' % (url,page-1), 'next_link': False}
+			content = {'prev_link': '%s/page/%s/' % (url,page-1), 'next_link': False}
 
 	paginator_template = open(path.PAGINATOR_TEMPLATE).read()
 	paginator = pystache.render(paginator_template,content)
@@ -368,8 +372,13 @@ def create_page(config,page_number):
 					}
 
 	template = open(path.INDEX_TEMPLATE).read()
+
+	dirpath = config['path'] + FOLDER_SEPARATOR + "page" + FOLDER_SEPARATOR + str(page_number)
+
+	if not os.path.exists(dirpath):
+		os.makedirs(dirpath)
 	
-	with codecs.open(os.path.join(config['path'],'pages%s%s.html' % (FOLDER_SEPARATOR,page_number)),'w',encoding='utf-8') as page:
+	with codecs.open(os.path.join(config['path'],'page%s%s%sindex.html' % (FOLDER_SEPARATOR,page_number,FOLDER_SEPARATOR)),'w',encoding='utf-8') as page:
 		content = pystache.render(template,page_content)
 		page.write(unicode(content))
 
@@ -434,8 +443,14 @@ def rebuild_blog(args={}):
 def create_permalinks(config):
 	for post in config['published_posts']:
 		page_content = create_post_page(config,post[1])
-		post_name = post[1][:-3] + '.html'
-		with codecs.open(os.path.join(config['path'],'pages%spermalinks%s%s' % (FOLDER_SEPARATOR,FOLDER_SEPARATOR,post_name)),'w',encoding='utf-8') as page:
+		post_name = slugify(post[2])
+		
+		dirpath = config['path'] + FOLDER_SEPARATOR + "post" + FOLDER_SEPARATOR + post_name
+
+		if not os.path.exists(dirpath):
+			os.makedirs(dirpath)
+
+		with codecs.open(os.path.join(config['path'],'post%s%s%sindex.html' % (FOLDER_SEPARATOR,post_name,FOLDER_SEPARATOR)),'w',encoding='utf-8') as page:
 			page.write(unicode(page_content))
 
 
@@ -491,6 +506,7 @@ def create_post_page(config,post_file_name):
 					'twitter': config['twitter'],
 					'css_file':config['css_file'],
 					'old_posts':get_permalinks_list(config),
+					'back_to_blog': True,
 					'disqus':disqus,
 					}
 
