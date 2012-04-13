@@ -264,6 +264,7 @@ def create_index(config):
 		'links':config['links'],
 		'twitter':config['twitter'],
 		'css_file':config['css_file'],
+		'phone_css_file':config['phone_css_file'],
 		'old_posts':get_permalinks_list(config),
 	}
 
@@ -368,6 +369,7 @@ def create_page(config,page_number):
 					'links':config['links'],
 					'twitter':config['twitter'],
 					'css_file':config['css_file'],
+					'phone_css_file':config['phone_css_file'],
 					'old_posts':get_permalinks_list(config),
 					}
 
@@ -505,6 +507,7 @@ def create_post_page(config,post_file_name):
 					'links':config['links'],
 					'twitter': config['twitter'],
 					'css_file':config['css_file'],
+					'phone_css_file':config['phone_css_file'],
 					'old_posts':get_permalinks_list(config),
 					'back_to_blog': True,
 					'disqus':disqus,
