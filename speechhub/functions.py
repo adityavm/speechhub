@@ -299,7 +299,10 @@ def create_next_page_link(page,number_of_posts,posts_per_page,url=''):
 		if(page == 0):
 			content = {'prev_link': False, 'next_link': '%s/page/%s/' % (url,2)}
 		else:
-			content = {'prev_link': '%s/page/%s/' % (url,page-1), 'next_link': '%s/page/%s/' % (url,page+1)}
+			if (page-1)==1:
+				content = {'prev_link': '%s/' % url, 'next_link': '%s/page/%s/' % (url,page+1)}
+			else:
+				content = {'prev_link': '%s/page/%s/' % (url,page-1), 'next_link': '%s/page/%s/' % (url,page+1)}
 	else:
 		if (page-1)==1:
 			content = {'prev_link': '%s/' % url, 'next_link': False}
@@ -405,8 +408,6 @@ def create_rss(config):
 		url = config['path']
 	else:
 		url = config['url']
-
-	paginator = create_next_page_link(0,len(config['published_posts']),config['posts_per_page'],url=url)
 
 	page_content = {'items':posts,
 		'blog_name':config['blog_name'],
