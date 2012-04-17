@@ -26,12 +26,49 @@ a:hover {
 	color: #888;
 }
 
-.post textarea {
+.post .md-e {
+	float: left;
+	margin-left: -110px; margin-top: 7px;
+	text-align: right;
+	width: 100px;
+}
+
+.post .md-e .hint {
+	display: inline-block;
+	opacity: 0;
+	visibility: hidden;
+	-webkit-transition-duration: 0.4s;
+	font: 12px "Calibri", sans-serif;
+	color: #888;
+	margin-top: 3px;
+}
+
+.post .md-e .hint a {
+	color: #666;
+}
+
+.post .md-e:hover .hint {
+	visibility: visible;
+	opacity: 1;
+}
+
+.post textarea,
+.CodeMirror {
 	width: 800px;
 	height: 80%;
 	font: 16px "Calibri", sans-serif;
 	border: 0;
 	padding-right: 50px; margin-bottom: 20px;
+}
+
+span.cm-quote {
+	color: #444;
+}
+
+span.cm-tag {
+	font-size: 14px;
+	font-family: "consolas", monospace;
+	color: #888;
 }
 
 a.button {

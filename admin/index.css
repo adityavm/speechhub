@@ -1,3 +1,9 @@
+@-webkit-keyframes colorFade {
+    0% { background-color: orange; color: #fff; -webkit-animation-timing-function: ease-out; }
+    65% { background-color: orange; color: #fff; -webkit-animation-timing-function: ease-out; }
+    100% { background-color: transparent; color: #666; -webkit-animation-timing-function: ease-out; }
+}
+
 body {
 	font-family: "Calibri";
 	width: 800px;
@@ -26,12 +32,18 @@ body {
 }
 
 .panel a.post {
-	display: block;
+	display: inline-block;
 	color: #666;
 	font-size: 20px;
 	font-weight: bold;
 	text-decoration: none;
-	margin: 3px 0;
+	margin: 3px 0; padding: 2px 4px;
+}
+
+.panel a.post:target {
+	-webkit-animation-delay: 0s;
+	-webkit-animation-duration: 3s;
+	-webkit-animation-name: colorFade;
 }
 
 .panel a.post:hover {

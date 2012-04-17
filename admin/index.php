@@ -67,10 +67,8 @@
 			echo $cmd;
 			exec($cmd, $arr);
 			print_r($arr);
-			exec("/usr/local/git/bin/git push origin master", $out);
-			print_r($out);
 			echo "-->";
-			header("Location: index.php");
+			header("Location: index.php#" . $meta['obj']['post_id']);
 		}
 	}
 ?>
@@ -97,7 +95,7 @@
 <h4>Published</h4>
 <?
 	foreach($published as $i=>$v):
-		echo "<a class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_title']}</a>";
+		echo "<a id=\"{$v['obj']['post_id']}\" class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_title']}</a><br />";
 		//print_r($v);
 	endforeach;
 ?>
