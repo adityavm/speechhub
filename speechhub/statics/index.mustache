@@ -1,32 +1,39 @@
 <html>
   <head>
-    <link rel="stylesheet" href="{{url}}/static/css/{{css_file}}" type="text/css" />
-	<link rel="stylesheet" type="text/css" media="screen and (max-device-width: 480px)" href="{{url}}/static/css/{{phone_css_file}}" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>{{blog_name}}</title>
 
 	<script type="text/javascript" src="http://use.typekit.com/fbv1sel.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+	{{#fonts_css}}
+		<link rel="stylesheet" type="text/css" href="{{url}}/static/css/{{fonts_css}}" />
+	{{/fonts_css}}
+    <link rel="stylesheet" media="screen" href="{{url}}/static/css/{{css_file}}" type="text/css" />
   </head>
   <body>
-    
-    <div id="top">
-	  <img src="{{url}}/static/images/psychonaut.png" class="icon" />
-
-      <h1 class="blog-title">
-        <a href="{{url}}/">{{blog_name}}</a>
-      </h1>
-
-      <span class="blog-description">
-        {{blog_description}}
-      </span>
-
-	  <a class="side" href="http://twitter.com/{{twitter}}">@{{twitter}}</a>
-	  <a class="side" href="mailto:{{email}}">say hi.</a>
-	  <a class="side" href="{{url}}/feed.rss">rss feed</a>
-    </div>
 
     <div id="content">
+
+	  <div id="intro">
+	  	<div class="left">
+			<h1 class="blog-title">
+				<a href="{{url}}/">
+					<img src="{{url}}/static/images/hat.png" class="icon" />
+					{{blog_name}}
+				</a>
+			</h1>
+		</div>
+
+		<div class="right">
+			<a class="side" href="http://twitter.com/{{twitter}}">@{{twitter}}</a>
+			<a class="side" href="mailto:{{email}}">say hi.</a>
+			<a class="side" href="{{url}}/feed.rss">rss feed</a>
+		</div>
+
+		<div class="clear"></div>
+	  </div>
 
       <div id="posts">
         {{#posts}}
@@ -42,45 +49,14 @@
 			{{#paginator}}
 				{{{paginator}}}
 			{{/paginator}}
+			<div id="copyright">&copy; Aditya Mukherjee 2012</div>
+			<div class="clear"></div>
         </div>
 
       </div>
-
-	  <!--
-      <div id="sidebar">
-        <div id="about">
-          <h3>About</h3>
-          {{about_author}}
-        </div>
-        <div id="contact">
-          <h3>Contact</h3>
-          {{#contacts}}
-            {{title}}: {{contact}}<br/>
-          {{/contacts}}
-        </div>
-        <div id="old-posts">
-          <h3>Old Posts</h3>
-          {{#old_posts}}
-            <a href="{{url}}">{{title}}</a><br/>
-          {{/old_posts}}
-        </div>
-        <div id="links">
-          <h3>Links</h3>
-          {{#links}}
-            <a href="{{url}}">{{text}}</a><br/>
-          {{/links}}
-        </div>
-      </div>
-	  -->
 
     </div>
 
-    <!--div id="footer">
-      <p>
-        Wow, thi blog uses Speech Hub! <a href="http://www.github.com/alvesjnr/speechhub">Fork Speech Hub on Github</a>
-      </p>
-    </div-->
-  {{{footage_content}}}
   </body>
   <script src="{{url}}/static/rainbow-custom.min.js"></script>
 </html>

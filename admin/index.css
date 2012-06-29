@@ -32,10 +32,9 @@ body {
 }
 
 .panel a.post {
-	display: inline-block;
+	display: block;
 	color: #666;
 	font-size: 20px;
-	font-weight: bold;
 	text-decoration: none;
 	margin: 3px 0; padding: 2px 4px;
 }

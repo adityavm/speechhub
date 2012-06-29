@@ -31,7 +31,7 @@
 		}
 
 		function save(){
-			post = $("textarea").val();
+			post =	cm.getValue();
 			$.post("modifyPost.php", {"text": post}, function(ret){
 				console.log("DEBUG: Done!");
 				console.log("DEBUG: ", ret);
@@ -40,7 +40,7 @@
 		}
 
 		function publish(){
-			post = $("textarea").val();
+			post =	cm.getValue();
 			$.post("modifyPost.php", {"text": post}, function(ret){
 				console.log("DEBUG: Done!");
 				console.log("MEBUG: ", ret);
@@ -73,9 +73,10 @@
 </div>
 
 <script type="text/javascript">
-	var myCodeMirror = CodeMirror.fromTextArea($("textarea")[0], {
+	var cm = CodeMirror.fromTextArea($("textarea")[0], {
 		"theme": "elegant",
 		"indentWithTabs": true,
+		"lineWrapping": true,
 		"keyMap": "vim",
 	});
 

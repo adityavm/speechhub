@@ -86,7 +86,9 @@
 <input type="text" class="newpost" placeholder="Type a few words ..."/>
 <?
 	foreach($ideas as $i=>$v):
-		echo "<a class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_title']}</a>";
+		echo ($v['obj']['post_title'] == "") 
+	   		? "<a class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_slug']}</a>"
+	   		: "<a class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_title']}</a>";
 		//print_r($v);
 	endforeach;
 ?>
@@ -95,7 +97,7 @@
 <h4>Published</h4>
 <?
 	foreach($published as $i=>$v):
-		echo "<a id=\"{$v['obj']['post_id']}\" class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_title']}</a><br />";
+		echo "<a id=\"{$v['obj']['post_id']}\" class=\"post\" href=\"edit.php\" data-obj='". base64_encode(serialize($v)) ."'>{$v['obj']['post_title']}</a>";
 		//print_r($v);
 	endforeach;
 ?>

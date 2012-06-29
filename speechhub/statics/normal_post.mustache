@@ -1,4 +1,5 @@
 <div class="post">
+	{{#title}}
 	<h1 class="post-title"><a href="{{url}}/{{relative_permalink}}">{{title}}</a></h1>
 
 	<div class="meta">
@@ -7,8 +8,14 @@
 		{{date}}
 		</span> 
 	</div>
+	{{/title}}
 
 	<span class="post-body">
 		{{{post}}}
 	</span>
+
+	{{^title}}
+	<!-- no title -->
+	<a href="{{url}}/{{relative_permalink}}" class="permalink">&#x2693;</a>
+	{{/title}}
 </div>

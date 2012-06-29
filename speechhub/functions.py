@@ -90,6 +90,7 @@ def get_initial_config_file(args):
 	config_struct['path'] = args['path']
 	config_struct['url'] = args['url'][0] if args['url'] else None
 	config_struct['blog_name'] = args['blog_name'][0] if args['blog_name'] else None
+	config_struct['fonts_css'] = args['fonts_css'][0] if args['fonts_css'] else None
 	config_struct['username'] = args['username'][0] if args['username'] else None
 	config_struct['email'] = args['email'][0] if args['email'] else None
 	config_struct['twitter'] = args['twitter'][0] if args['twitter'] else None
@@ -109,9 +110,11 @@ def new_post(args):
 
 	config = json.load(config_file)
 
-	post_id = config['post_count']+1
-	#post_file_name = slugify(post_title) + time.strftime("%Y-%b-%d")
-	post_file_name = str(post_id)
+	#post_id = config['post_count']+1
+	if post_title == "":
+		post_file_name = "untitled-" + str(int(time.time()))
+	else:
+		post_file_name = slugify(post_title)
 	author = config['username']
 
 	if os.path.exists(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name))):
@@ -121,19 +124,17 @@ def new_post(args):
 		post_file.write("Fill it!")
 
 	with open(os.path.join(LOCAL_PATH,'posts%s%s.meta.json' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_meta:
-		meta = {"post_id":		post_id,
+		meta = {"post_id":		0,
 				"date":			time.asctime(),
 				"post_title":	post_title,
 				"post_file_name":post_file_name + '.md',
-				"post_slug": 	slugify(post_title),
+				"post_slug": 	post_file_name,
 				"post_link":	None,
 				"post_author":	author,
 				"published":	False,
 				"post_type":	"text",
 				}
 		json.dump(meta,post_meta)
-
-	increment_post_count()
 
 	print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
 
@@ -157,8 +158,7 @@ def new_link(args):
 	post_file_name = str(post_id)
 	author = config['username']
 
-	if os.path.exists(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name))):
-		raise DuplicatedPostNameError()
+	if os.path.exists(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name))): raise DuplicatedPostNameError()
 
 	with open(os.path.join(LOCAL_PATH,'posts%s%s.md' % (FOLDER_SEPARATOR,post_file_name)),'w') as post_file:
 		post_file.write("Fill it!")
@@ -174,8 +174,6 @@ def new_link(args):
 				"post_type":"link",
 				}
 		json.dump(meta,post_meta)
-
-	increment_post_count()
 
 	print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
 
@@ -255,7 +253,7 @@ def create_index(config):
 
 	page_content = {'posts':posts,
 		'blog_name':config['blog_name'],
-		'blog_description':config['blog_description'], #TODO!
+		'blog_description':config['blog_description'],
 		'paginator':paginator,
 		'url':url,
 		'about_author':config['about_author'],
@@ -264,7 +262,7 @@ def create_index(config):
 		'links':config['links'],
 		'twitter':config['twitter'],
 		'css_file':config['css_file'],
-		'phone_css_file':config['phone_css_file'],
+		'fonts_css':config['fonts_css'],
 		'old_posts':get_permalinks_list(config),
 	}
 
@@ -372,7 +370,7 @@ def create_page(config,page_number):
 					'links':config['links'],
 					'twitter':config['twitter'],
 					'css_file':config['css_file'],
-					'phone_css_file':config['phone_css_file'],
+					'fonts_css':config['fonts_css'],
 					'old_posts':get_permalinks_list(config),
 					}
 
@@ -401,6 +399,7 @@ def create_rss(config):
 
 		if p['type'] == "link":
 			p['rss_link'] = p['post_link']
+			p['post'] += "<p><a href='%s' class='parmalink'>&#x2693;</a></p>" % (p['url'] + "/" + p['relative_permalink'])
 		else:
 			p['rss_link'] = p['url'] + "/" + p['relative_permalink']
 	
@@ -411,7 +410,7 @@ def create_rss(config):
 
 	page_content = {'items':posts,
 		'blog_name':config['blog_name'],
-		'blog_description':config['blog_description'], #TODO!
+		'blog_description':config['blog_description'],
 		'url':url,
 		'last_build': time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()), 
 	}
@@ -508,7 +507,7 @@ def create_post_page(config,post_file_name):
 					'links':config['links'],
 					'twitter': config['twitter'],
 					'css_file':config['css_file'],
-					'phone_css_file':config['phone_css_file'],
+					'fonts_css':config['fonts_css'],
 					'old_posts':get_permalinks_list(config),
 					'back_to_blog': True,
 					'disqus':disqus,
@@ -534,10 +533,17 @@ def publish_post(path):
 		raise PostNotFoundError()
 
 	meta = json.load(open(full_path))
+
+	if meta['published'] == False:
+		meta['post_id'] = config['post_count']+1
+		meta['date'] = time.asctime()
+		increment_post_count()
+	
 	meta['published'] = True
 	json.dump(meta,open(full_path,'w'))
 
 	rebuild_blog()
+
 
 def get_config():
 	LOCAL_PATH = os.getcwd()
@@ -593,7 +599,7 @@ def set_debug(_debug):
 
 def increment_post_count():
 	config = get_config()
-	config['post_count'] = config['post_count']+1
+	config['post_count'] += 1
 	update_config(config)
 
 
