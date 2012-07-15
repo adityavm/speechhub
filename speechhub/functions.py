@@ -27,7 +27,7 @@ import shutil
 import codecs
 
 import pystache
-from markdown import markdown
+from markdown import Markdown
 from unidecode import unidecode
 
 sys.path.append("/Users/aditya/Dev/Github/speechhub/speechhub")
@@ -37,6 +37,12 @@ from exc import DuplicatedPostNameError, NotASpeechhubProjectFolderErro, PostNot
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 FOLDER_SEPARATOR = os.sep
+
+"""
+	call all Markdown methods from this parser
+	to avoid botched up footnotes on index pages
+"""
+md_parser = Markdown(['footnotes(UNIQUE_IDS=True)'])
 
 
 def create_blog(args):
@@ -185,7 +191,9 @@ def parse_post(config,post_file_name):
 	post = codecs.open(post_file_name,'r',encoding='utf-8')
 	meta_content = json.load(open(meta_file_name))
 	post_content = unicode(post.read())
-	parsed_post = markdown(post_content, ['footnotes'])
+
+	parsed_post = md_parser.convert(post_content)
+	md_parser.reset()
 
 	if config['debug']:
 		url = config['path']
