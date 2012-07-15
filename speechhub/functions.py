@@ -27,7 +27,7 @@ import shutil
 import codecs
 
 import pystache
-from markdown import Markdown
+from markdown import Markdown, markdown
 from unidecode import unidecode
 
 sys.path.append("/Users/aditya/Dev/Github/speechhub/speechhub")
@@ -184,7 +184,7 @@ def new_link(args):
 	print u"Post '%s' created. To fill it with something brillant please edit the file '%s'" % (post_title,post_file_name)
 
 
-def parse_post(config,post_file_name):
+def parse_post(config,post_file_name,single=False):
 
 	meta_file_name = '.'.join(post_file_name.split('.')[:-1]) + '.meta.json'
 
@@ -192,8 +192,11 @@ def parse_post(config,post_file_name):
 	meta_content = json.load(open(meta_file_name))
 	post_content = unicode(post.read())
 
-	parsed_post = md_parser.convert(post_content)
-	md_parser.reset()
+	if single:
+		parsed_post = markdown(post_content, ['footnotes'])
+	else:
+		parsed_post = md_parser.convert(post_content)
+		md_parser.reset()
 
 	if config['debug']:
 		url = config['path']
@@ -479,7 +482,7 @@ def create_post_page(config,post_file_name):
 	project_path = config['path']
 	posts_folder = os.path.join(project_path,'posts')
 	
-	i_posts = [parse_post(config,os.path.join(posts_folder,post_file_name))]
+	i_posts = [parse_post(config,os.path.join(posts_folder,post_file_name), True)]
 
 	posts = [];
 	for p in i_posts:
